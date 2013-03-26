@@ -1,0 +1,99 @@
+Stack=0x1ffff0, pc starting at 0x1000
+Hi Uday, How are you?
+Got 0 arguments.
+Available memory: 0x13310 -> 0x200000.
+Argument count is 0.
+Chasing tail 10.
+Got an open with parameters ('chasetail',0x200a)
+Open of (chasetail,0x200a) returns 0x1200a.
+Chasing tail 11.
+Got an open with parameters ('chasetail',0x200b)
+Open of (chasetail,0x200b) returns 0x1200b.
+Chasing tail 12.
+Got an open with parameters ('chasetail',0x200c)
+Open of (chasetail,0x200c) returns 0x1200c.
+Chasing tail 13.
+Got an open with parameters ('chasetail',0x200d)
+Open of (chasetail,0x200d) returns 0x1200d.
+Chasing tail 14.
+Got an open with parameters ('chasetail',0x200e)
+Open of (chasetail,0x200e) returns 0x1200e.
+Chasing tail 15.
+Got an open with parameters ('chasetail',0x200f)
+Open of (chasetail,0x200f) returns 0x1200f.
+Chasing tail 16.
+Got an open with parameters ('chasetail',0x2010)
+Open of (chasetail,0x2010) returns 0x12010.
+Chasing tail 17.
+Got an open with parameters ('chasetail',0x2011)
+Open of (chasetail,0x2011) returns 0x12011.
+Chasing tail 18.
+Got an open with parameters ('chasetail',0x2012)
+Open of (chasetail,0x2012) returns 0x12012.
+Chasing tail 19.
+Got an open with parameters ('chasetail',0x2013)
+Open of (chasetail,0x2013) returns 0x12013.
+Chasing tail 20.
+Got an open with parameters ('chasetail',0x2014)
+Open of (chasetail,0x2014) returns 0x12014.
+Chasing tail 21.
+Got an open with parameters ('chasetail',0x2015)
+Open of (chasetail,0x2015) returns 0x12015.
+Chasing tail 22.
+Got an open with parameters ('chasetail',0x2016)
+Open of (chasetail,0x2016) returns 0x12016.
+Chasing tail 23.
+Got an open with parameters ('chasetail',0x2017)
+Open of (chasetail,0x2017) returns 0x12017.
+Chasing tail 24.
+Got an open with parameters ('chasetail',0x2018)
+Open of (chasetail,0x2018) returns 0x12018.
+Chasing tail 25.
+Got an open with parameters ('chasetail',0x2019)
+Open of (chasetail,0x2019) returns 0x12019.
+Chasing tail 26.
+Got an open with parameters ('chasetail',0x201a)
+Open of (chasetail,0x201a) returns 0x1201a.
+Chasing tail 27.
+Got an open with parameters ('chasetail',0x201b)
+Open of (chasetail,0x201b) returns 0x1201b.
+Chasing tail 28.
+Got an open with parameters ('chasetail',0x201c)
+Open of (chasetail,0x201c) returns 0x1201c.
+Chasing tail 29.
+Got an open with parameters ('chasetail',0x201d)
+Open of (chasetail,0x201d) returns 0x1201d.
+Chasing tail 30.
+Got an open with parameters ('chasetail',0x201e)
+Open of (chasetail,0x201e) returns 0x1201e.
+Chasing tail 31.
+Got an open with parameters ('chasetail',0x201f)
+Open of (chasetail,0x201f) returns 0x1201f.
+Chasing tail 32.
+Got an open with parameters ('chasetail',0x2020)
+Open of (chasetail,0x2020) returns 0x12020.
+Chasing tail 33.
+Got an open with parameters ('chasetail',0x2021)
+Open of (chasetail,0x2021) returns 0x12021.
+Chasing tail 34.
+Got an open with parameters ('chasetail',0x2022)
+Open of (chasetail,0x2022) returns 0x12022.
+Chasing tail 35.
+Got an open with parameters ('chasetail',0x2023)
+Open of (chasetail,0x2023) returns 0x12023.
+Chasing tail 36.
+Got an open with parameters ('chasetail',0x2024)
+Open of (chasetail,0x2024) returns 0x12024.
+Chasing tail 37.
+Got an open with parameters ('chasetail',0x2025)
+Open of (chasetail,0x2025) returns 0x12025.
+Chasing tail 38.
+Got an open with parameters ('chasetail',0x2026)
+Open of (chasetail,0x2026) returns 0x12026.
+Chasing tail 39.
+Got an open with parameters ('chasetail',0x2027)
+Open of (chasetail,0x2027) returns 0x12027.
+2 Chasing tail 40.
+Got an open with parameters ('chasetail',0x2028)
+Open of (chasetail,0x2028) returns 0x12028.
+1 1 2 1 1 2 1 1 2 1 2 1 1 1 2 1 1 2 1 1 2 1 2 1 1 1 2 1 1 2 1 1 2 1 2 1 1 1 2 1 1 2 1 1 2 1 2 1 1 1 2 Got a control-C: exiting!

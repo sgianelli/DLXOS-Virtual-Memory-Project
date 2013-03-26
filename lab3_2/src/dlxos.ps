@@ -1,0 +1,1148 @@
+%!PS-Adobe-2.0
+%%BoundingBox: 24 24 588 768
+%%Title: Enscript Output
+%%For: Uday Ramesh Savagaonkar
+%%Creator: GNU enscript 1.6.1
+%%CreationDate: Wed Jan  9 14:59:31 2002
+%%Orientation: Portrait
+%%Pages: (atend)
+%%DocumentMedia: Letter 612 792 0 () ()
+%%DocumentNeededResources: (atend)
+%%EndComments
+%%BeginProlog
+%%BeginResource: procset Enscript-Prolog 1.6 1
+%
+% Procedures.
+%
+
+/_S {	% save current state
+  /_s save def
+} def
+/_R {	% restore from saved state
+  _s restore
+} def
+
+/S {	% showpage protecting gstate
+  gsave
+  showpage
+  grestore
+} bind def
+
+/MF {	% fontname newfontname -> -	make a new encoded font
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  % insert only valid encoding vectors
+  encoding_vector length 256 eq {
+    newfont /Encoding encoding_vector put
+  } if
+
+  newfontname newfont definefont pop
+} def
+
+/SF { % fontname width height -> -	set a new font
+  /height exch def
+  /width exch def
+
+  findfont
+  [width 0 0 height 0 0] makefont setfont
+} def
+
+/SUF { % fontname width height -> -	set a new user font
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF
+  /F-gs-user-font width height SF
+} def
+
+/M {moveto} bind def
+/s {show} bind def
+
+/Box {	% x y w h -> -			define box path
+  /d_h exch def /d_w exch def /d_y exch def /d_x exch def
+  d_x d_y  moveto
+  d_w 0 rlineto
+  0 d_h rlineto
+  d_w neg 0 rlineto
+  closepath
+} def
+
+/bgs {	% x y height blskip gray str -> -	show string with bg color
+  /str exch def
+  /gray exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    gray setgray
+    fill
+  grestore
+  x y M str s
+} def
+
+% Highlight bars.
+/highlight_bars {	% nlines lineheight output_y_margin gray -> -
+  gsave
+    setgray
+    /ymarg exch def
+    /lineheight exch def
+    /nlines exch def
+
+    % This 2 is just a magic number to sync highlight lines to text.
+    0 d_header_y ymarg sub 2 sub translate
+
+    /cw d_output_w cols div def
+    /nrows d_output_h ymarg 2 mul sub lineheight div cvi def
+
+    % for each column
+    0 1 cols 1 sub {
+      cw mul /xp exch def
+
+      % for each rows
+      0 1 nrows 1 sub {
+        /rn exch def
+        rn lineheight mul neg /yp exch def
+        rn nlines idiv 2 mod 0 eq {
+	  % Draw highlight bar.  4 is just a magic indentation.
+	  xp 4 add yp cw 8 sub lineheight neg Box fill
+	} if
+      } for
+    } for
+
+  grestore
+} def
+
+% Line highlight bar.
+/line_highlight {	% x y width height gray -> -
+  gsave
+    /gray exch def
+    Box gray setgray fill
+  grestore
+} def
+
+% Column separator lines.
+/column_lines {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h translate
+    /cw d_output_w cols div def
+    1 1 cols 1 sub {
+      cw mul 0 moveto
+      0 d_output_h rlineto stroke
+    } for
+  grestore
+} def
+
+% Column borders.
+/column_borders {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h moveto
+    0 d_output_h rlineto
+    d_output_w 0 rlineto
+    0 d_output_h neg rlineto
+    closepath stroke
+  grestore
+} def
+
+% Do the actual underlay drawing
+/draw_underlay {
+  ul_style 0 eq {
+    ul_str true charpath stroke
+  } {
+    ul_str show
+  } ifelse
+} def
+
+% Underlay
+/underlay {	% - -> -
+  gsave
+    0 d_page_h translate
+    d_page_h neg d_page_w atan rotate
+
+    ul_gray setgray
+    ul_font setfont
+    /dw d_page_h dup mul d_page_w dup mul add sqrt def
+    ul_str stringwidth pop dw exch sub 2 div ul_h_ptsize -2 div moveto
+    draw_underlay
+  grestore
+} def
+
+/user_underlay {	% - -> -
+  gsave
+    ul_x ul_y translate
+    ul_angle rotate
+    ul_gray setgray
+    ul_font setfont
+    0 0 ul_h_ptsize 2 div sub moveto
+    draw_underlay
+  grestore
+} def
+
+% Page prefeed
+/page_prefeed {		% bool -> -
+  statusdict /prefeed known {
+    statusdict exch /prefeed exch put
+  } {
+    pop
+  } ifelse
+} def
+
+% Wrapped line markers
+/wrapped_line_mark {	% x y charwith charheight type -> -
+  /type exch def
+  /h exch def
+  /w exch def
+  /y exch def
+  /x exch def
+
+  type 2 eq {
+    % Black boxes (like TeX does)
+    gsave
+      0 setlinewidth
+      x w 4 div add y M
+      0 h rlineto w 2 div 0 rlineto 0 h neg rlineto
+      closepath fill
+    grestore
+  } {
+    type 3 eq {
+      % Small arrows
+      gsave
+        .2 setlinewidth
+        x w 2 div add y h 2 div add M
+        w 4 div 0 rlineto
+        x w 4 div add y lineto stroke
+
+        x w 4 div add w 8 div add y h 4 div add M
+        x w 4 div add y lineto
+	w 4 div h 8 div rlineto stroke
+      grestore
+    } {
+      % do nothing
+    } ifelse
+  } ifelse
+} def
+
+% EPSF import.
+
+/BeginEPSF {
+  /b4_Inc_state save def    		% Save state for cleanup
+  /dict_count countdictstack def	% Count objects on dict stack
+  /op_count count 1 sub def		% Count objects on operand stack
+  userdict begin
+  /showpage { } def
+  0 setgray 0 setlinecap
+  1 setlinewidth 0 setlinejoin
+  10 setmiterlimit [ ] 0 setdash newpath
+  /languagelevel where {
+    pop languagelevel
+    1 ne {
+      false setstrokeadjust false setoverprint
+    } if
+  } if
+} bind def
+
+/EndEPSF {
+  count op_count sub { pos } repeat	% Clean up stacks
+  countdictstack dict_count sub { end } repeat
+  b4_Inc_state restore
+} bind def
+
+% Check PostScript language level.
+/languagelevel where {
+  pop /gs_languagelevel languagelevel def
+} {
+  /gs_languagelevel 1 def
+} ifelse
+%%EndResource
+%%BeginResource: procset Enscript-Encoding-88591 1.6 1
+/encoding_vector [
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclam       	/quotedbl     	/numbersign   	
+/dollar       	/percent      	/ampersand    	/quoteright   	
+/parenleft    	/parenright   	/asterisk     	/plus         	
+/comma        	/hyphen       	/period       	/slash        	
+/zero         	/one          	/two          	/three        	
+/four         	/five         	/six          	/seven        	
+/eight        	/nine         	/colon        	/semicolon    	
+/less         	/equal        	/greater      	/question     	
+/at           	/A            	/B            	/C            	
+/D            	/E            	/F            	/G            	
+/H            	/I            	/J            	/K            	
+/L            	/M            	/N            	/O            	
+/P            	/Q            	/R            	/S            	
+/T            	/U            	/V            	/W            	
+/X            	/Y            	/Z            	/bracketleft  	
+/backslash    	/bracketright 	/asciicircum  	/underscore   	
+/quoteleft    	/a            	/b            	/c            	
+/d            	/e            	/f            	/g            	
+/h            	/i            	/j            	/k            	
+/l            	/m            	/n            	/o            	
+/p            	/q            	/r            	/s            	
+/t            	/u            	/v            	/w            	
+/x            	/y            	/z            	/braceleft    	
+/bar          	/braceright   	/tilde        	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclamdown   	/cent         	/sterling     	
+/currency     	/yen          	/brokenbar    	/section      	
+/dieresis     	/copyright    	/ordfeminine  	/guillemotleft	
+/logicalnot   	/hyphen       	/registered   	/macron       	
+/degree       	/plusminus    	/twosuperior  	/threesuperior	
+/acute        	/mu           	/paragraph    	/bullet       	
+/cedilla      	/onesuperior  	/ordmasculine 	/guillemotright	
+/onequarter   	/onehalf      	/threequarters	/questiondown 	
+/Agrave       	/Aacute       	/Acircumflex  	/Atilde       	
+/Adieresis    	/Aring        	/AE           	/Ccedilla     	
+/Egrave       	/Eacute       	/Ecircumflex  	/Edieresis    	
+/Igrave       	/Iacute       	/Icircumflex  	/Idieresis    	
+/Eth          	/Ntilde       	/Ograve       	/Oacute       	
+/Ocircumflex  	/Otilde       	/Odieresis    	/multiply     	
+/Oslash       	/Ugrave       	/Uacute       	/Ucircumflex  	
+/Udieresis    	/Yacute       	/Thorn        	/germandbls   	
+/agrave       	/aacute       	/acircumflex  	/atilde       	
+/adieresis    	/aring        	/ae           	/ccedilla     	
+/egrave       	/eacute       	/ecircumflex  	/edieresis    	
+/igrave       	/iacute       	/icircumflex  	/idieresis    	
+/eth          	/ntilde       	/ograve       	/oacute       	
+/ocircumflex  	/otilde       	/odieresis    	/divide       	
+/oslash       	/ugrave       	/uacute       	/ucircumflex  	
+/udieresis    	/yacute       	/thorn        	/ydieresis    	
+] def
+%%EndResource
+%%EndProlog
+%%BeginSetup
+%%IncludeResource: font Courier-Bold
+%%IncludeResource: font Courier
+/HFpt_w 10 def
+/HFpt_h 10 def
+/Courier-Bold /HF-gs-font MF
+/HF /HF-gs-font findfont [HFpt_w 0 0 HFpt_h 0 0] makefont def
+/Courier /F-gs-font MF
+/F-gs-font 10 10 SF
+/#copies 1 def
+% Pagedevice definitions:
+gs_languagelevel 1 gt {
+  <<
+    /PageSize [612 792] 
+  >> setpagedevice
+} if
+%%BeginResource: procset Enscript-Header-simple 1.6 1
+
+/do_header {	% print default simple header
+  gsave
+    d_header_x d_header_y HFpt_h 3 div add translate
+
+    HF setfont
+    user_header_p {
+      5 0 moveto user_header_left_str show
+
+      d_header_w user_header_center_str stringwidth pop sub 2 div
+      0 moveto user_header_center_str show
+
+      d_header_w user_header_right_str stringwidth pop sub 5 sub
+      0 moveto user_header_right_str show
+    } {
+      5 0 moveto fname show
+      45 0 rmoveto fmodstr show
+      45 0 rmoveto pagenumstr show
+    } ifelse
+
+  grestore
+} def
+%%EndResource
+/d_page_w 564 def
+/d_page_h 744 def
+/d_header_x 0 def
+/d_header_y 729 def
+/d_header_w 564 def
+/d_header_h 15 def
+/d_footer_x 0 def
+/d_footer_y 0 def
+/d_footer_w 564 def
+/d_footer_h 0 def
+/d_output_w 564 def
+/d_output_h 729 def
+/cols 1 def
+%%EndSetup
+%%Page: (1) 1
+%%BeginPageSetup
+_S
+24 24 translate
+/pagenum 1 def
+/fname (dlxos.s) def
+/fdir () def
+/ftail (dlxos.s) def
+% User defined strings:
+/fmodstr (Tue Nov 07 14:08:38 2000) def
+/pagenumstr (1) def
+/user_header_p false def
+%%EndPageSetup
+do_header
+5 716 M
+(;;; ) s
+5 705 M
+(;;; Initialization code for programs running in the DLX simulator.) s
+5 694 M
+(;;; Copyright \(c\) 1999 by Ethan Miller) s
+5 683 M
+(;;; ) s
+5 672 M
+(;;;) s
+5 650 M
+(.text) s
+5 639 M
+(.align 2) s
+5 617 M
+(;;;----------------------------------------------------------------------) s
+5 606 M
+(;;; osinit) s
+5 595 M
+(;;;) s
+5 584 M
+(;;; This is the first function called by the simulator, even before main.) s
+5 573 M
+(;;; Since it's called BEFORE any "real" routines, we can use any registers) s
+5 562 M
+(;;; we want as long as we don't mess up the stack or frame pointers.) s
+5 551 M
+(;;;) s
+5 540 M
+(;;; This routine loads the interrupt vector to point to the interrupt) s
+5 529 M
+(;;; handler later in this file.  It should never return, because _main) s
+5 518 M
+(;;; should call exitsim\(\) or exit\(\) rather than returning here.) s
+5 507 M
+(;;; ) s
+5 496 M
+(;;; After initialization is done, this routine jumps to _main to start the) s
+5 485 M
+(;;; C code portion of the operating system.) s
+5 474 M
+(;;;----------------------------------------------------------------------) s
+5 463 M
+(.proc _osinit) s
+5 452 M
+(.global _osinit) s
+5 441 M
+(_osinit:) s
+5 430 M
+(        ;; Set up the interrupt handler) s
+5 419 M
+(        lhi     r1,\(_intrhandler>>16\)&0xffff) s
+5 408 M
+(        addui   r1,r1,_intrhandler&0xffff) s
+5 397 M
+(        movi2s  intrvec,r1) s
+5 386 M
+(        ;; Never returns because exitsim is called first) s
+5 375 M
+(        j       _main) s
+5 364 M
+(.endproc _osinit) s
+5 342 M
+(;;;----------------------------------------------------------------------) s
+5 331 M
+(;;; intrhandler) s
+5 320 M
+(;;;) s
+5 309 M
+(;;; Called when an interrupt or trap is received by the CPU.  It stores the) s
+5 298 M
+(;;; current register set on the system stack.  It then pushes the parameters) s
+5 287 M
+(;;; to the C interrupt handler onto the stack: the ISR, IAR, and CAUSE) s
+5 276 M
+(;;; registers along with the original stack pointer.  The C interrupt) s
+5 265 M
+(;;; handler can then copy arguments from the original stack, performing) s
+5 254 M
+(;;; user -> system translations if necessary.) s
+5 243 M
+(;;; ) s
+5 232 M
+(;;;----------------------------------------------------------------------) s
+5 221 M
+(.proc _intrhandler) s
+5 210 M
+(.global _intrhandler) s
+5 199 M
+(_intrhandler:) s
+5 188 M
+(        ;; We can use r31 as scratch space because its value was saved in) s
+5 177 M
+(        ;; ir31.  However, we must save the "real" value of r31 on the) s
+5 166 M
+(        ;; stack.) s
+5 144 M
+(        ;; Always store the registers on the system stack.  This way, we don't) s
+5 133 M
+(        ;; have to worry about translating things from user -> system.  We) s
+5 122 M
+(        ;; use r31 as the base register because its value was saved in ir31.) s
+5 100 M
+(        ;; If this was a user process, load r29 with the current system) s
+5 89 M
+(        ;; stack pointer.  If it was a system process, just use the) s
+5 78 M
+(        ;; current stack pointer.) s
+5 67 M
+(        movs2i  r31,isr) s
+5 56 M
+(        andi    r31,r31,0x40) s
+5 45 M
+(        bnez    r31,intrSystem) s
+5 34 M
+(        lhi     r31,\(_currentPCB>>16\)&0xffff) s
+5 23 M
+(        addui   r31,r31,_currentPCB&0xffff) s
+5 12 M
+(        lw      r31,\(r31\)) s
+_R
+S
+%%Page: (2) 2
+%%BeginPageSetup
+_S
+24 24 translate
+/pagenum 2 def
+/fname (dlxos.s) def
+/fdir () def
+/ftail (dlxos.s) def
+% User defined strings:
+/fmodstr (Tue Nov 07 14:08:38 2000) def
+/pagenumstr (2) def
+/user_header_p false def
+%%EndPageSetup
+do_header
+5 716 M
+(        lw      r31,4\(r31\)) s
+5 705 M
+(        ;; Save the original \(user\) stack pointer) s
+5 694 M
+(        sw      -184\(r31\),r29   ; we haven't yet bumped SP, and 156-340 = -184) s
+5 683 M
+(        ;; Copy the system stack pointer into r29 \(current stack pointer\)) s
+5 672 M
+(        ori     r29,r31,0) s
+5 661 M
+(        beqz    r0,intrSaveReg  ; skip over the system part....) s
+5 650 M
+(intrSystem:) s
+5 639 M
+(        ;; Use the stack pointer we're already using) s
+5 628 M
+(        ;; Save r29 because we won't save it later) s
+5 617 M
+(        sw      -184\(r29\),r29   ; we haven't yet bumped SP, and 156-340 = -184) s
+5 606 M
+(intrSaveReg:) s
+5 595 M
+(        ;; Adjust stack pointer for all the stuff we're going to push.  This) s
+5 584 M
+(        ;; is a bit more space than we need currently, but it leaves room) s
+5 573 M
+(        ;; for more stuff if needed.) s
+5 562 M
+(        subui   r29,r29,#340) s
+5 551 M
+(        ;; Push all the stuff onto the stack) s
+5 540 M
+(        sw      44\(r29\),r1) s
+5 529 M
+(        sw      48\(r29\),r2) s
+5 518 M
+(        sw      52\(r29\),r3) s
+5 507 M
+(        sw      56\(r29\),r4) s
+5 496 M
+(        sw      60\(r29\),r5) s
+5 485 M
+(        sw      64\(r29\),r6) s
+5 474 M
+(        sw      68\(r29\),r7) s
+5 463 M
+(        sw      72\(r29\),r8) s
+5 452 M
+(        sw      76\(r29\),r9) s
+5 441 M
+(        sw      80\(r29\),r10) s
+5 430 M
+(        sw      84\(r29\),r11) s
+5 419 M
+(        sw      88\(r29\),r12) s
+5 408 M
+(        sw      92\(r29\),r13) s
+5 397 M
+(        sw      96\(r29\),r14) s
+5 386 M
+(        sw      100\(r29\),r15) s
+5 375 M
+(        sw      104\(r29\),r16) s
+5 364 M
+(        sw      108\(r29\),r17) s
+5 353 M
+(        sw      112\(r29\),r18) s
+5 342 M
+(        sw      116\(r29\),r19) s
+5 331 M
+(        sw      120\(r29\),r20) s
+5 320 M
+(        sw      124\(r29\),r21) s
+5 309 M
+(        sw      128\(r29\),r22) s
+5 298 M
+(        sw      132\(r29\),r23) s
+5 287 M
+(        sw      136\(r29\),r24) s
+5 276 M
+(        sw      140\(r29\),r25) s
+5 265 M
+(        sw      144\(r29\),r26) s
+5 254 M
+(        sw      148\(r29\),r27) s
+5 243 M
+(        sw      152\(r29\),r28) s
+5 232 M
+(        ;; Skip r29 - stored earlier!) s
+5 221 M
+(        sw      160\(r29\),r30) s
+5 210 M
+(        ;; Load the value of r31 from the special register and then save it) s
+5 199 M
+(        movs2i  r3,ir31) s
+5 188 M
+(        sw      164\(r29\),r3) s
+5 177 M
+(        ;; Store the floating-point registers) s
+5 166 M
+(        sd      168\(r29\),f0) s
+5 155 M
+(        sd      176\(r29\),f2) s
+5 144 M
+(        sd      184\(r29\),f4) s
+5 133 M
+(        sd      192\(r29\),f6) s
+5 122 M
+(        sd      200\(r29\),f8) s
+5 111 M
+(        sd      208\(r29\),f10) s
+5 100 M
+(        sd      216\(r29\),f12) s
+5 89 M
+(        sd      224\(r29\),f14) s
+5 78 M
+(        sd      232\(r29\),f16) s
+5 67 M
+(        sd      240\(r29\),f18) s
+5 56 M
+(        sd      248\(r29\),f20) s
+5 45 M
+(        sd      256\(r29\),f22) s
+5 34 M
+(        sd      264\(r29\),f24) s
+5 23 M
+(        sd      272\(r29\),f26) s
+5 12 M
+(        sd      280\(r29\),f28) s
+_R
+S
+%%Page: (3) 3
+%%BeginPageSetup
+_S
+24 24 translate
+/pagenum 3 def
+/fname (dlxos.s) def
+/fdir () def
+/ftail (dlxos.s) def
+% User defined strings:
+/fmodstr (Tue Nov 07 14:08:38 2000) def
+/pagenumstr (3) def
+/user_header_p false def
+%%EndPageSetup
+do_header
+5 716 M
+(        sd      288\(r29\),f30) s
+5 705 M
+(        ;; NOTE: we don't save the interrupt vector register because it) s
+5 694 M
+(        ;; doesn't change from process to process.) s
+5 683 M
+(        ;; NOTE: we don't save the status register because most of the flags) s
+5 672 M
+(        ;; are the same from process to process if they're in the interrupt) s
+5 661 M
+(        ;; handler.  Of course, we DO save the ISR.) s
+5 650 M
+(        movs2i  r4,iar) s
+5 639 M
+(        sw      296\(r29\),r4) s
+5 628 M
+(        movs2i  r5,isr) s
+5 617 M
+(        sw      300\(r29\),r5) s
+5 606 M
+(        movs2i  r6,cause) s
+5 595 M
+(        sw      304\(r29\),r6) s
+5 584 M
+(        movs2i  r3,fault) s
+5 573 M
+(        sw      308\(r29\),r3) s
+5 562 M
+(        movs2i  r3,ptbase) s
+5 551 M
+(        sw      312\(r29\),r3) s
+5 540 M
+(        movs2i  r3,ptsize) s
+5 529 M
+(        sw      316\(r29\),r3) s
+5 518 M
+(        movs2i  r3,ptbits) s
+5 507 M
+(        sw      320\(r29\),r3) s
+5 485 M
+(        ;; Push the interrupt information onto the stack) s
+5 474 M
+(        sw      0\(r29\),r6       ; push CAUSE) s
+5 463 M
+(        sw      4\(r29\),r4       ; push IAR) s
+5 452 M
+(        sw      8\(r29\),r5       ; push ISR) s
+5 441 M
+(        ;; Get the original stack pointer) s
+5 430 M
+(        lw      r1,156\(r29\)) s
+5 419 M
+(        sw      12\(r29\),r1) s
+5 408 M
+(        ;; Save the previous interrupt stack frame address in the current frame) s
+5 397 M
+(        lhi     r1,\(_currentPCB>>16\)&0xffff) s
+5 386 M
+(        addui   r1,r1,_currentPCB&0xffff) s
+5 375 M
+(        lw      r1,\(r1\)) s
+5 364 M
+(        lw      r2,0\(r1\)) s
+5 353 M
+(        sw      40\(r29\),r2) s
+5 342 M
+(        ;; Save this frame address in the PCB.  This is used so the OS can) s
+5 331 M
+(        ;; easily access the current interrupt save frame) s
+5 320 M
+(        sw      0\(r1\), r29) s
+5 309 M
+(        ;; Call the "real" interrupt handler.  This will possibly switch) s
+5 298 M
+(        ;; contexts.  This call never returns; instead, a separate routine) s
+5 287 M
+(        ;; \(_intrreturn\) is called to return from interrupts after restoring) s
+5 276 M
+(        ;; the current context.) s
+5 265 M
+(        j       _dointerrupt) s
+5 254 M
+(        nop) s
+5 243 M
+(.endproc _intrhandler) s
+_R
+S
+%%Page: (4) 4
+%%BeginPageSetup
+_S
+24 24 translate
+/pagenum 4 def
+/fname (dlxos.s) def
+/fdir () def
+/ftail (dlxos.s) def
+% User defined strings:
+/fmodstr (Tue Nov 07 14:08:38 2000) def
+/pagenumstr (4) def
+/user_header_p false def
+%%EndPageSetup
+do_header
+5 705 M
+(;;;----------------------------------------------------------------------) s
+5 694 M
+(;;; intrreturn) s
+5 683 M
+(;;;) s
+5 672 M
+(;;; Return from an interrupt or trap.  This restores all of the previously) s
+5 661 M
+(;;; saved registers and then returns to where the program left off.  The) s
+5 650 M
+(;;; current contents of the registers are destroyed.  This routine uses) s
+5 639 M
+(;;; the saved interrupt frame pointer, so the stack pointer need not) s
+5 628 M
+(;;; be correct.  Note, though, that the register contents from the previous) s
+5 617 M
+(;;; process must have previously been saved - in other words, call this) s
+5 606 M
+(;;; routine from a trap or interrupt handler.) s
+5 595 M
+(;;;----------------------------------------------------------------------) s
+5 584 M
+(        .proc   _intrreturn) s
+5 573 M
+(        .global _intrreturn) s
+5 562 M
+(_intrreturn:) s
+5 551 M
+(        ;; Disable interrupts - this routine must be atomic, and interrupts) s
+5 540 M
+(        ;; may not be currently disabled.  Don't worry about saving registers) s
+5 529 M
+(        ;; because we're about to reload them anyway.) s
+5 518 M
+(        jal     _DisableIntrs) s
+5 507 M
+(        ;; Get our interrupt stack frame location and load it into the stack) s
+5 496 M
+(        ;; pointer.) s
+5 485 M
+(        lhi     r1,\(_currentPCB>>16\)&0xffff) s
+5 474 M
+(        addui   r1,r1,_currentPCB&0xffff) s
+5 463 M
+(        lw      r1,0\(r1\)) s
+5 452 M
+(        lw      r29,0\(r1\)) s
+5 441 M
+(        ;; Get the previous interrupt stack frame location and make it the) s
+5 430 M
+(        ;; current interrupt save frame.) s
+5 419 M
+(        lw      r2,40\(r29\)) s
+5 408 M
+(        sw      0\(r1\), r2) s
+5 386 M
+(        ;; Reload the registers for the new process.  We don't have to) s
+5 375 M
+(        ;; load in the exact opposite order as long as we're careful to) s
+5 364 M
+(        ;; get the right values back in.) s
+5 353 M
+(        lw      r3,296\(r29\)) s
+5 342 M
+(        movi2s  iar,r3) s
+5 331 M
+(        lw      r3,300\(r29\)) s
+5 320 M
+(        movi2s  isr,r3) s
+5 309 M
+(        lw      r3,304\(r29\)) s
+5 298 M
+(        movi2s  cause,r3) s
+5 287 M
+(        lw      r3,308\(r29\)) s
+5 276 M
+(        movi2s  fault,r3) s
+5 265 M
+(        lw      r3,312\(r29\)) s
+5 254 M
+(        movi2s  ptbase,r3) s
+5 243 M
+(        lw      r3,316\(r29\)) s
+5 232 M
+(        movi2s  ptsize,r3) s
+5 221 M
+(        lw      r3,320\(r29\)) s
+5 210 M
+(        movi2s  ptbits,r3) s
+5 188 M
+(        ;; Reload the floating point registers) s
+5 177 M
+(        ld      f0,168\(r29\)) s
+5 166 M
+(        ld      f2,176\(r29\)) s
+5 155 M
+(        ld      f4,184\(r29\)) s
+5 144 M
+(        ld      f6,192\(r29\)) s
+5 133 M
+(        ld      f8,200\(r29\)) s
+5 122 M
+(        ld      f10,208\(r29\)) s
+5 111 M
+(        ld      f12,216\(r29\)) s
+5 100 M
+(        ld      f14,224\(r29\)) s
+5 89 M
+(        ld      f16,232\(r29\)) s
+5 78 M
+(        ld      f18,240\(r29\)) s
+5 67 M
+(        ld      f20,248\(r29\)) s
+5 56 M
+(        ld      f22,256\(r29\)) s
+5 45 M
+(        ld      f24,264\(r29\)) s
+5 34 M
+(        ld      f26,272\(r29\)) s
+5 23 M
+(        ld      f28,280\(r29\)) s
+5 12 M
+(        ld      f30,288\(r29\)) s
+_R
+S
+%%Page: (5) 5
+%%BeginPageSetup
+_S
+24 24 translate
+/pagenum 5 def
+/fname (dlxos.s) def
+/fdir () def
+/ftail (dlxos.s) def
+% User defined strings:
+/fmodstr (Tue Nov 07 14:08:38 2000) def
+/pagenumstr (5) def
+/user_header_p false def
+%%EndPageSetup
+do_header
+5 705 M
+(        ;; Reload the integer registers.  We don't reload r0 because it's) s
+5 694 M
+(        ;; always 0.  We won't reload r29 here because we're using it as) s
+5 683 M
+(        ;; the stack pointer.  The same goes for r1, which we'll use as) s
+5 672 M
+(        ;; scratch so we can store r29.) s
+5 661 M
+(        ;; Skip r1 - restored later) s
+5 650 M
+(        lw      r2,48\(r29\)) s
+5 639 M
+(        lw      r3,52\(r29\)) s
+5 628 M
+(        lw      r4,56\(r29\)) s
+5 617 M
+(        lw      r5,60\(r29\)) s
+5 606 M
+(        lw      r6,64\(r29\)) s
+5 595 M
+(        lw      r7,68\(r29\)) s
+5 584 M
+(        lw      r8,72\(r29\)) s
+5 573 M
+(        lw      r9,76\(r29\)) s
+5 562 M
+(        lw      r10,80\(r29\)) s
+5 551 M
+(        lw      r11,84\(r29\)) s
+5 540 M
+(        lw      r12,88\(r29\)) s
+5 529 M
+(        lw      r13,92\(r29\)) s
+5 518 M
+(        lw      r14,96\(r29\)) s
+5 507 M
+(        lw      r15,100\(r29\)) s
+5 496 M
+(        lw      r16,104\(r29\)) s
+5 485 M
+(        lw      r17,108\(r29\)) s
+5 474 M
+(        lw      r18,112\(r29\)) s
+5 463 M
+(        lw      r19,116\(r29\)) s
+5 452 M
+(        lw      r20,120\(r29\)) s
+5 441 M
+(        lw      r21,124\(r29\)) s
+5 430 M
+(        lw      r22,128\(r29\)) s
+5 419 M
+(        lw      r23,132\(r29\)) s
+5 408 M
+(        lw      r24,136\(r29\)) s
+5 397 M
+(        lw      r25,140\(r29\)) s
+5 386 M
+(        lw      r26,144\(r29\)) s
+5 375 M
+(        lw      r27,148\(r29\)) s
+5 364 M
+(        lw      r28,152\(r29\)) s
+5 353 M
+(        ;; Skip r29 - restored later) s
+5 342 M
+(        lw      r30,160\(r29\)) s
+5 331 M
+(        lw      r31,164\(r29\)) s
+5 320 M
+(        ) s
+5 309 M
+(        addui   r29,r29,#340) s
+5 298 M
+(        ;; Save the current value of the stack pointer after adjusting it) s
+5 287 M
+(        ;; Note that this will "destroy" the stack values below this interrupt) s
+5 276 M
+(        ;; stack frame.  This is exactly what we want!) s
+5 265 M
+(        sw      4\(r1\),r29) s
+5 254 M
+(        ori     r1,r29,#0) s
+5 243 M
+(        lw      r29,-184\(r1\)    ; 156-340 = -184) s
+5 232 M
+(        lw      r1,-296\(r1\)     ; 44-340 = -296) s
+5 221 M
+(        rfe) s
+5 210 M
+(        .endproc _intrreturn) s
+_R
+S
+%%Page: (6) 6
+%%BeginPageSetup
+_S
+24 24 translate
+/pagenum 6 def
+/fname (dlxos.s) def
+/fdir () def
+/ftail (dlxos.s) def
+% User defined strings:
+/fmodstr (Tue Nov 07 14:08:38 2000) def
+/pagenumstr (6) def
+/user_header_p false def
+%%EndPageSetup
+do_header
+5 705 M
+(;;;----------------------------------------------------------------------) s
+5 694 M
+(;;; SetIntrs) s
+5 683 M
+(;;;) s
+5 672 M
+(;;; This routine sets the interrupt level to the value passed \(0 -> all) s
+5 661 M
+(;;; interrupts enabled; 0xf -> all interrupts disabled\).  It returns the) s
+5 650 M
+(;;; former value for the interrupt flags.) s
+5 639 M
+(;;;----------------------------------------------------------------------) s
+5 628 M
+(.proc _SetIntrs) s
+5 617 M
+(.global _SetIntrs) s
+5 606 M
+(_SetIntrs:) s
+5 595 M
+(        subui   r29,r29,#16) s
+5 584 M
+(        sw      12\(r29\),r2      ; save r2) s
+5 573 M
+(        lw      r2,16\(r29\)      ; Get the new interrupt level) s
+5 562 M
+(        andi    r2,r2,#0x0f     ; Mask off interrupt levels) s
+5 551 M
+(        movs2i  r1,status) s
+5 540 M
+(        sw      8\(r29\),r1       ; Store the old interrupt values) s
+5 529 M
+(        andi    r1,r1,#0xfff0   ; Mask off old interrupt level) s
+5 518 M
+(        or      r1,r2,r1        ; OR in new interrupt level) s
+5 507 M
+(        movi2s  status,r1       ) s
+5 496 M
+(        lw      r1,8\(r29\)       ; Get back the original interrupt level) s
+5 485 M
+(        andi    r1,r1,#0x0f     ; Mask off all but interrupt levels) s
+5 474 M
+(        lw      r2,12\(r29\)      ; restore r2) s
+5 463 M
+(        addui   r29,r29,#16     ; restore stack pointer) s
+5 452 M
+(        jr      r31) s
+5 441 M
+(        nop) s
+5 430 M
+(.endproc _SetIntrs) s
+5 408 M
+(.proc _CurrentIntrs) s
+5 397 M
+(.global _CurrentIntrs) s
+5 386 M
+(_CurrentIntrs:) s
+5 375 M
+(        movs2i  r1,status) s
+5 364 M
+(        andi    r1,r1,#0xf) s
+5 353 M
+(        jr      r31) s
+5 342 M
+(        nop) s
+5 331 M
+(.endproc _CurrentIntrs) s
+5 320 M
+(;;;----------------------------------------------------------------------) s
+5 309 M
+(;;; _ProcessSleep) s
+5 298 M
+(;;;) s
+5 287 M
+(;;; If a context switch from elsewhere in the kernel is desired, take a) s
+5 276 M
+(;;; trap and call this routine from the trap handler.) s
+5 265 M
+(;;;----------------------------------------------------------------------) s
+5 254 M
+(.proc _ProcessSleep) s
+5 243 M
+(.global _ProcessSleep) s
+5 232 M
+(_ProcessSleep:  ) s
+5 221 M
+(        trap    #0x410          ; This is a process sleep trap) s
+5 210 M
+(        nop) s
+5 199 M
+(        jr      r31) s
+5 188 M
+(        nop) s
+5 177 M
+(.endproc _ProcessSleep) s
+_R
+S
+%%Trailer
+%%Pages: 6
+%%DocumentNeededResources: font Courier-Bold Courier 
+%%EOF
