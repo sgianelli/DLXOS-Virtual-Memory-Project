@@ -168,15 +168,19 @@ MemoryTranslateUserToSystem (PCB *pcb, uint32 addr)
 //-------------------------------------------
 // You need to change the code below 
 //-------------------------------------------
-
+    // MEMORY_PAGE_SIZE = 8K
     int	page = addr / MEMORY_PAGE_SIZE;
     int offset = addr % MEMORY_PAGE_SIZE;
-    if (page > pcb->npages) {
+    //printf("MemoryTranslateUserToSystem invoked; User address = %x\tPhysical address = %x\tpage = %d\toffset = %x\tpagetable[page] = %x\n", addr, (pcb->pagetable[page] & MEMORY_PTE_MASK) + offset, page, offset, pcb->pagetable[page]);
+
+    //if (page > pcb->npages) {
+    if(page > L1_MAX_ENTRIES) {
+      //printf("Oh god we failed\n");
       return (0);
     }
     return ((pcb->pagetable[page] & MEMORY_PTE_MASK) + offset);
 }
-
+
 //----------------------------------------------------------------------
 //
 //	moveBetweenSpaces
@@ -209,6 +213,7 @@ moveBetweenSpaces (PCB *pcb, unsigned char *s, unsigned char *u,
     // Translate current user page to system address.  If this fails, return
     // the number of bytes copied so far.
     curUser = (unsigned char *)MemoryTranslateUserToSystem (pcb, (uint32)u);
+
     if (curUser == (unsigned char *)0) {
       // Leave the loop if translation fails.
       break;

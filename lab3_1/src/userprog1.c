@@ -7,9 +7,12 @@ main()
     int i, sem;
     char  Sum=0;
     char * charPtr=(char *)0x7000 ;
-
-    for(i=0;i<12;i++)
+    //Printf("USERPROG1: After initialization\n");
+ 
+    for(i=0;i<12;i++) {
+          //Printf("USERPROG1: For loop 1, iteration %d\n", i);
           *(charPtr + 8192*i)=(char )i;
+    }
     for(i=0;i<12;i++)
         Sum+= *(charPtr + 8192 * i);
 
