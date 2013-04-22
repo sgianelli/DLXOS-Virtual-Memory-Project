@@ -112,7 +112,9 @@ ProcessFreeResources (PCB *pcb)
 // You may change the code below
 //------------------------------------------
 
+  // "process id ..,, virtual page base address: 0x......., Freeing physical page number: .., "
   for (i = 0; i < L1_MAX_ENTRIES; i++) {
+    //printf("ProcessFreeResources: process id %d,\tvirtual page base address: %p\tFreeing physicl page number: %p", ...); // TODO!!!
     MemoryFreePte (pcb->pagetable[i]);
   }
 
@@ -907,7 +909,10 @@ void ProcessKill (PCB *pcb)
   //printf("ProcessKill invoked with pcb = %p\n", pcb);
 	// add your code below
   QueueRemove(&pcb->l);
-	ProcessFreeResources (pcb);
+  ProcessFreeResources (pcb);
+  if (QueueEmpty (&runQueue)) {
+    printf("You have run out of memory, killing the process");
+  }
   ProcessSchedule ();
 }
 
