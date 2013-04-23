@@ -14,5 +14,5 @@ main()
     for(i=0;i<13;i++)
         Sum+= *(charPtr + 8192 * i);
 
-    Printf("\n in Userprog2, Sum : %d",Sum);
+    Printf("\n\nin Userprog2, Sum : %d\n\n",Sum);
 }

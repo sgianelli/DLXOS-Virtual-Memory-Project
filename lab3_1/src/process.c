@@ -910,9 +910,12 @@ void ProcessKill (PCB *pcb)
 	// add your code below
   QueueRemove(&pcb->l);
   ProcessFreeResources (pcb);
-  if (QueueEmpty (&runQueue)) {
-    printf("You have run out of memory, killing the process");
-  }
+
+  // If there are no more runnable processes...
+  //if (QueueEmpty (&runQueue)) {
+  //  printf("You have run out of memory, killing the process");
+  //}
+
   ProcessSchedule ();
 }
 
@@ -929,9 +932,17 @@ void PageFaultHandler()
   tempstackframe = currentPCB->currentSavedFrame ;
   faultaddress = tempstackframe[PROCESS_STACK_FAULT];
 
+  // Check the PCB to see how many pages have been allocated
+  // if < 12, allocate, else memory error
+  if (currentPCB->npages == 16) { // there should be a constant for this but I don't know it off the top of my head
+      printf("SOME MEMORY SHIT HAS HIT THE FAN AND I CAN'T RECALL THE THING I AM ACTUALLY SUPPOSED TO PRINT\n");
+      return ProcessKill(currentPCB);
+  }
+
   newPage = MemoryAllocPage();
   if(newPage == 0) {
     printf("Fatal error -- new page allocated incorrectly\n");   
+    exitsim();
   }
   page = faultaddress / MEMORY_PAGE_SIZE;
   currentPCB->pagetable[page] = MemorySetupPte (newPage);
