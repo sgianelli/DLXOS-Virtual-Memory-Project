@@ -1,3 +1,6 @@
 *.o
 *.lst
 *.dlx
+*.obj
+*/execs/*
+*.ppt
