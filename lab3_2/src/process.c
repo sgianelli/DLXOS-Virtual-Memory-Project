@@ -412,25 +412,25 @@ ProcessFork (VoidFunc func, uint32 param, char *name, int isUser)
   newPage = MemoryAllocPage();
   if (newPage == 0) pageFail();
   pcb->pagetable[0] = MemorySetupPte(newPage);
-  L2_pagetable = (uint32) pcb->pagetable[0] & MEMORY_PTE_MASK;
+  L2_pagetable = (uint32 *) (pcb->pagetable[0] & MEMORY_PTE_MASK);
   
   // Allocate 3 pages for text/data within first L2 page table
   for(i = 0; i < 3; i++) {
     newPage = MemoryAllocPage();
     if (newPage == 0) pageFail();
-    (*L2_pagetable) + i = MemorySetupPte(newPage);
+    *(L2_pagetable + i) = MemorySetupPte(newPage);
   }
   
   // Allocate last L2 page table
   newPage = MemoryAllocPage();
   if(newPage == 0)  pageFail();
   pcb->pagetable[L1_MAX_ENTRIES - 1] = MemorySetupPte(newPage);
-  L2_pagetable = (uint32) pcb->pagetable[L1_MAX_ENTRIES - 1] & MEMORY_PTE_MAST;
+  L2_pagetable = (uint32 *) (pcb->pagetable[L1_MAX_ENTRIES - 1] & MEMORY_PTE_MASK);
   
   // Allocate 1 page for user stack within L2 last page table
   newPage = MemoryAllocPage ();
   if (newPage == 0) pageFail();
-  (*L2_pagetable) + L2_MAX_ENTRIES - 1 = MemorySetupPte(newPage);
+  *(L2_pagetable + L2_MAX_ENTRIES - 1) = MemorySetupPte(newPage);
 
   // 1 page for system stack
   newPage = MemoryAllocPage ();
