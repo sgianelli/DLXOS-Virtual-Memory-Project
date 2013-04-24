@@ -40,7 +40,7 @@
 #define	MEMORY_PTE_DIRTY	0x00000002
 // The page has been referenced if this bit is set in the PTE
 #define	MEMORY_PTE_REFERENCED	0x00000004
-#define	MEMORY_PTE_MASK		(~(MEMORY_PTE_VALID|MEMORY_PTE_DIRTY|MEMORY_PTE_REFERENCED))
+#define	MEMORY_PTE_MASK		(~(MEMORY_PTE_VALID|MEMORY_PTE_DIRTY|MEMORY_PTE_REFERENCED)) // NOT(7)
 
 extern int	lastosaddress;		// Defined in an assembly file
 extern int	MemoryGetSize ();

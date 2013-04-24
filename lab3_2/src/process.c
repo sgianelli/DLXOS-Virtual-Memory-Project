@@ -13,6 +13,7 @@
 #include "process.h"
 #include "synch.h"
 #include "filesys.h"
+
 float MyFuncRetZero();
 
 // Pointer to the current PCB.  This is used by the assembly language
@@ -402,8 +403,12 @@ ProcessFork (VoidFunc func, uint32 param, char *name, int isUser)
 
   pcb->npages = 4;
 
+  // set all L1 pointers to 0
   for (i = 0; i < L1_MAX_ENTRIES; i++)
     pcb->pagetable[i] = 0x0;
+
+  // initialize an L1 page
+  //pcb->pagetable[0] = ;
 
   // 3 pages for text/data
   for(i = 0; i < 3; i++) {
