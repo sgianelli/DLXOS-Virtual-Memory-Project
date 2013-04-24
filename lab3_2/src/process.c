@@ -116,12 +116,14 @@ ProcessFreeResources (PCB *pcb)
 //------------------------------------------
 
   for (i = 0; i < L1_MAX_ENTRIES; i++) {
-    for(j = 0; j < L2_MAX_ENTRIES; j++) {
-      if( *((uint32 *) (pcb->pagetable[i] & MEMORY_PTE_MASK) + j)  != 0) {
-        //printf("Process id %lu,\tvirtual page base address: %p\tFreeing physical page number: %d\n",findpid(pcb),&pcb->pagetable[i],i);        
-        MemoryFreePte (((uint32 *) (pcb->pagetable[i] * MEMORY_PTE_MASK)) + j );
+    if(pcb->pagetable[i] != 0) {
+      for(j = 0; j < L2_MAX_ENTRIES; j++) {
+        if( *((uint32 *) (pcb->pagetable[i] & MEMORY_PTE_MASK) + j)  != 0) {
+          //printf("Process id %lu,\tvirtual page base address: %p\tFreeing physical page number: %d\n",findpid(pcb),&pcb->pagetable[i],i);        
+          MemoryFreePte (((uint32 *) (pcb->pagetable[i] * MEMORY_PTE_MASK)) + j );
+        }
+        MemoryFreePte (pcb->pagetable[i]);
       }
-      MemoryFreePte (pcb->pagetable[i]);
     }
   }
 
@@ -942,6 +944,7 @@ void PageFaultHandler()
   uint32 *tempstackframe;
   uint32 faultaddress;
   int newPage, page;
+  uint32* L2_pagetable;
 
   //printf("PageFaultHandler invoked!\n");
 
@@ -949,20 +952,28 @@ void PageFaultHandler()
   faultaddress = tempstackframe[PROCESS_STACK_FAULT];
 
   // Check the PCB to see how many pages have been allocated
-  // if < 12, allocate, else memory error
-  if (currentPCB->npages == 16) { // there should be a constant for this but I don't know it off the top of my head
+  if (currentPCB->npages % 64 == 0) { // there should be a constant for this but I don't know it off the top of my head
       printf("You have run out of memory, killing the process\n");
       return ProcessKill(currentPCB);
   }
 
+  // Allocate page for L2 table within L1 entry
   newPage = MemoryAllocPage();
   if(newPage == 0) {
     printf("Fatal error -- new page allocated incorrectly\n");
     return ProcessKill(currentPCB);
   }
-
   page = faultaddress / MEMORY_PAGE_SIZE;
   currentPCB->pagetable[page] = MemorySetupPte (newPage);
+  L2_pagetable = (uint32 *) (currentPCB->pagetable[page] & MEMORY_PTE_MASK);
+
+  newPage = MemoryAllocPage ();
+  if(newPage == 0) {
+    printf("Fatal error -- new page allocated incorrectly\n");
+    return ProcessKill(currentPCB);
+  }
+  *(L2_pagetable + page - 1) = MemorySetupPte(newPage);
+
   currentPCB->npages = currentPCB->npages + 1;  
 
     printf("Process id %lu,\tpage fault address: %p\tPhysical page number allocated: %d\n",findpid(currentPCB),faultaddress,page);
