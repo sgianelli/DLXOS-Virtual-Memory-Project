@@ -173,31 +173,22 @@ MemoryTranslateUserToSystem (PCB *pcb, uint32 addr)
     // |____L1_5-Bits____|____L2_6-Bits____|____Offset_13-Bits____|
     //
     //
+    uint32 *L2_pagetable;
     int page = addr / MEMORY_PAGE_SIZE;
-    int L2_page = (addr >> MEMORY_L2_PAGE_SIZE_BITS) & L2_MAX_ENTRIES;
-    int L1_page = addr >> MEMORY_L1_PAGE_SIZE_BITS;
+    int L2_page = page % L2_MAX_ENTRIES;
+    int L1_page = page / L2_MAX_ENTRIES;
     int offset = addr % MEMORY_PAGE_SIZE;
 
-    printf("MTU Invoked \
-            addr = %12p \
-            physical = %12p \
-            L1 = %2d \
-            L2 = %2d \
-            offset = %6x \
-            pagetable[page] = %x\n", 
-            (void *)addr, 
-            (void *)((pcb->pagetable[L1_page] & MEMORY_PTE_MASK) & MEMORY_PTE_MASK) + offset, 
-            L1_page, 
-            L2_page, 
-            offset, 
-            pcb->pagetable[L1_page]);
-
-    if(page > L1_MAX_ENTRIES) {
+   if((L1_page*L2_page) > ((L1_MAX_ENTRIES-1)*(L2_MAX_ENTRIES-1))) {
       printf("Oh god we failed\n");
       return (0);
     }
 
-    return ((pcb->pagetable[page] & MEMORY_PTE_MASK) + offset);
+    L2_pagetable = ((uint32 *)(pcb->pagetable[L1_page] & MEMORY_PTE_MASK)); // starting memory location of L2 page table
+    L2_pagetable += L2_page;
+    printf("L1 page: %d\tL2 page: %d\treturning: %p\n", L1_page, L2_page, L2_pagetable);
+
+    return ((*(L2_pagetable) & MEMORY_PTE_MASK)+ offset);
 }
 
 //----------------------------------------------------------------------
