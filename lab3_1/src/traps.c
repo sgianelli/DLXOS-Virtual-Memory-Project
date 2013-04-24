@@ -370,7 +370,6 @@ dointerrupt (unsigned int cause, unsigned int iar, unsigned int isr,
       exitsim ();
       break;
     case TRAP_PAGEFAULT:	// page fault
-         printf("PageFault Trap hit\n");
          PageFaultHandler();
       break;
     default:

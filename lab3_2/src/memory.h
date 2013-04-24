@@ -22,16 +22,16 @@
 // For example, if you have 4KB pages and each L2 page table has 512 entries,
 // you'd have 2MB per entry in a L1 table.  That would mean L1_BITS=21 and
 // L2_BITS=12.
-#define	MEMORY_L1_PAGE_SIZE_BITS 16	// each entry in L1 is 64 KB
-#define	MEMORY_L2_PAGE_SIZE_BITS 16	// if L1 == L2, there's no L2 tables
+#define	MEMORY_L1_PAGE_SIZE_BITS 19	// each entry in L1 is 64 KB
+#define	MEMORY_L2_PAGE_SIZE_BITS 13	// if L1 == L2, there's no L2 tables
 #define	MEMORY_PAGE_SIZE	(1 << MEMORY_L2_PAGE_SIZE_BITS)
 
 #define	MEMORY_PAGE_MASK	(MEMORY_PAGE_SIZE-1)
 #define	MEMORY_MAX_PAGES	0x10000
 #define TOP_VIRTUAL_ADDRESS_SPACE  MEMORY_PAGE_SIZE
 
-#define L1_MAX_ENTRIES 0x01
-#define L2_MAX_ENTRIES 0x01
+#define L1_MAX_ENTRIES 0x20 // 32
+#define L2_MAX_ENTRIES 0x40 // 64
 
 
 // The PTE is valid if this bit is set in the PTE!

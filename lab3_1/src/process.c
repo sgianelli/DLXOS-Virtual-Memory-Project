@@ -47,6 +47,8 @@ static processQuantum = DLX_PROCESS_QUANTUM;
 // String listing debugging options to print out.
 char	debugstr[200];
 
+unsigned findpid(PCB *pcb);
+
 
 //----------------------------------------------------------------------
 //
@@ -112,10 +114,11 @@ ProcessFreeResources (PCB *pcb)
 // You may change the code below
 //------------------------------------------
 
-  // "process id ..,, virtual page base address: 0x......., Freeing physical page number: .., "
   for (i = 0; i < L1_MAX_ENTRIES; i++) {
-    //printf("ProcessFreeResources: process id %d,\tvirtual page base address: %p\tFreeing physicl page number: %p", ...); // TODO!!!
-    MemoryFreePte (pcb->pagetable[i]);
+    if(pcb->pagetable[i] != 0) {
+      printf("Process id %lu,\tvirtual page base address: %p\tFreeing physical page number: %d\n",findpid(pcb),&pcb->pagetable[i],i);
+      MemoryFreePte (pcb->pagetable[i]);
+    }
   }
 
   pcb->npages = 0;
@@ -398,6 +401,10 @@ ProcessFork (VoidFunc func, uint32 param, char *name, int isUser)
 //------------------------------------------------------------
 
   pcb->npages = 4;
+
+  for (i = 0; i < L1_MAX_ENTRIES; i++)
+    pcb->pagetable[i] = 0x0;
+
   // 3 pages for text/data
   for(i = 0; i < 3; i++) {
     newPage = MemoryAllocPage ();
@@ -935,16 +942,19 @@ void PageFaultHandler()
   // Check the PCB to see how many pages have been allocated
   // if < 12, allocate, else memory error
   if (currentPCB->npages == 16) { // there should be a constant for this but I don't know it off the top of my head
-      printf("SOME MEMORY SHIT HAS HIT THE FAN AND I CAN'T RECALL THE THING I AM ACTUALLY SUPPOSED TO PRINT\n");
+      printf("You have run out of memory, killing the process\n");
       return ProcessKill(currentPCB);
   }
 
   newPage = MemoryAllocPage();
   if(newPage == 0) {
-    printf("Fatal error -- new page allocated incorrectly\n");   
-    exitsim();
+    printf("Fatal error -- new page allocated incorrectly\n");
+    return ProcessKill(currentPCB);
   }
+
   page = faultaddress / MEMORY_PAGE_SIZE;
   currentPCB->pagetable[page] = MemorySetupPte (newPage);
   currentPCB->npages = currentPCB->npages + 1;  
+
+    printf("Process id %lu,\tpage fault address: %p\tPhysical page number allocated: %d\n",findpid(currentPCB),faultaddress,page);
 }
