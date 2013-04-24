@@ -106,7 +106,7 @@ void
 ProcessFreeResources (PCB *pcb)
 {
   int		i;
-
+  int   j;
   QueueInsertLast (&freepcbs, &pcb->l);
   // Free the process's memory.  This is easy with a one-level page
   // table, but could get more complex with two-level page tables.
@@ -116,8 +116,11 @@ ProcessFreeResources (PCB *pcb)
 //------------------------------------------
 
   for (i = 0; i < L1_MAX_ENTRIES; i++) {
-    if(pcb->pagetable[i] != 0) {
-      printf("Process id %lu,\tvirtual page base address: %p\tFreeing physical page number: %d\n",findpid(pcb),&pcb->pagetable[i],i);
+    for(j = 0; j < L2_MAX_ENTRIES; j++) {
+      if( *((uint32 *) (pcb->pagetable[i] & MEMORY_PTE_MASK) + j)  != 0) {
+        //printf("Process id %lu,\tvirtual page base address: %p\tFreeing physical page number: %d\n",findpid(pcb),&pcb->pagetable[i],i);        
+        MemoryFreePte (((uint32 *) (pcb->pagetable[i] * MEMORY_PTE_MASK)) + j );
+      }
       MemoryFreePte (pcb->pagetable[i]);
     }
   }
