@@ -169,15 +169,34 @@ MemoryTranslateUserToSystem (PCB *pcb, uint32 addr)
 // You need to change the code below 
 //-------------------------------------------
     // MEMORY_PAGE_SIZE = 8K
-    int	page = addr / MEMORY_PAGE_SIZE;
+    //
+    // |____L1_5-Bits____|____L2_6-Bits____|____Offset_13-Bits____|
+    //
+    //
+    int page = addr / MEMORY_PAGE_SIZE;
+    int L2_page = (addr >> MEMORY_L2_PAGE_SIZE_BITS) & L2_MAX_ENTRIES;
+    int L1_page = addr >> MEMORY_L1_PAGE_SIZE_BITS;
     int offset = addr % MEMORY_PAGE_SIZE;
-    //printf("MemoryTranslateUserToSystem invoked; User address = %x\tPhysical address = %x\tpage = %d\toffset = %x\tpagetable[page] = %x\n", addr, (pcb->pagetable[page] & MEMORY_PTE_MASK) + offset, page, offset, pcb->pagetable[page]);
 
-    //if (page > pcb->npages) {
+    printf("MTU Invoked \
+            addr = %12p \
+            physical = %12p \
+            L1 = %2d \
+            L2 = %2d \
+            offset = %6x \
+            pagetable[page] = %x\n", 
+            (void *)addr, 
+            (void *)((pcb->pagetable[L1_page] & MEMORY_PTE_MASK) & MEMORY_PTE_MASK) + offset, 
+            L1_page, 
+            L2_page, 
+            offset, 
+            pcb->pagetable[L1_page]);
+
     if(page > L1_MAX_ENTRIES) {
-      //printf("Oh god we failed\n");
+      printf("Oh god we failed\n");
       return (0);
     }
+
     return ((pcb->pagetable[page] & MEMORY_PTE_MASK) + offset);
 }
 
