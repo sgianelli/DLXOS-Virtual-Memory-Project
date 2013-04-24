@@ -332,6 +332,10 @@ uint32 get_argument(char *string)
   return location2;
 }
 
+void pageFail() {
+  printf ("aFATAL: couldn't allocate memory - no free pages!\n");
+  exitsim (); // NEVER RETURNS!
+}
 
 
 //----------------------------------------------------------------------
@@ -362,6 +366,7 @@ ProcessFork (VoidFunc func, uint32 param, char *name, int isUser)
   unsigned char buf[100];
   uint32 dum[MAX_ARGS+8], count, offset;
   char *str;
+  uint32 *L2_pagetable;
 
   intrs = DisableIntrs ();
   dbprintf ('I', "Old interrupt value was 0x%x.\n", intrs);
@@ -403,37 +408,33 @@ ProcessFork (VoidFunc func, uint32 param, char *name, int isUser)
 
   pcb->npages = 4;
 
-  // set all L1 pointers to 0
-  for (i = 0; i < L1_MAX_ENTRIES; i++)
-    pcb->pagetable[i] = 0x0;
-
-  // initialize an L1 page
-  //pcb->pagetable[0] = ;
-
-  // 3 pages for text/data
+  // Allocate first L2 page table
+  newPage = MemoryAllocPage();
+  if (newPage == 0) pageFail();
+  pcb->pagetable[0] = MemorySetupPte(newPage);
+  L2_pagetable = (uint32) pcb->pagetable[0] & MEMORY_PTE_MASK;
+  
+  // Allocate 3 pages for text/data within first L2 page table
   for(i = 0; i < 3; i++) {
-    newPage = MemoryAllocPage ();
-    if (newPage == 0) {
-      printf ("aFATAL: couldn't allocate memory - no free pages!\n");
-      exitsim ();	// NEVER RETURNS!
-    }
-    pcb->pagetable[i] = MemorySetupPte (newPage);
+    newPage = MemoryAllocPage();
+    if (newPage == 0) pageFail();
+    (*L2_pagetable) + i = MemorySetupPte(newPage);
   }
-
-  // 1 page for user stack
+  
+  // Allocate last L2 page table
+  newPage = MemoryAllocPage();
+  if(newPage == 0)  pageFail();
+  pcb->pagetable[L1_MAX_ENTRIES - 1] = MemorySetupPte(newPage);
+  L2_pagetable = (uint32) pcb->pagetable[L1_MAX_ENTRIES - 1] & MEMORY_PTE_MAST;
+  
+  // Allocate 1 page for user stack within L2 last page table
   newPage = MemoryAllocPage ();
-  if (newPage == 0) {
-    printf ("aFATAL: couldn't allocate memory - no free pages!\n");
-    exitsim ();	// NEVER RETURNS!
-  }
-  pcb->pagetable[L1_MAX_ENTRIES-1] = MemorySetupPte (newPage);
+  if (newPage == 0) pageFail();
+  (*L2_pagetable) + L2_MAX_ENTRIES - 1 = MemorySetupPte(newPage);
 
   // 1 page for system stack
   newPage = MemoryAllocPage ();
-  if (newPage == 0) {
-    printf ("bFATAL: couldn't allocate system stack - no free pages!\n");
-    exitsim ();	// NEVER RETURNS!
-  }
+  if (newPage == 0) pageFail(); // a = (a = MemoryAllocPage() > 0 ? a : pageFail())
   pcb->sysStackArea = newPage * MEMORY_PAGE_SIZE;
 
   //----------------------------------------------------------------------
