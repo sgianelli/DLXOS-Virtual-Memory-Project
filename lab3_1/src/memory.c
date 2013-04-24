@@ -173,7 +173,6 @@ MemoryTranslateUserToSystem (PCB *pcb, uint32 addr)
     int offset = addr % MEMORY_PAGE_SIZE;
     //printf("MemoryTranslateUserToSystem invoked; User address = %x\tPhysical address = %x\tpage = %d\toffset = %x\tpagetable[page] = %x\n", addr, (pcb->pagetable[page] & MEMORY_PTE_MASK) + offset, page, offset, pcb->pagetable[page]);
 
-    //if (page > pcb->npages) {
     if(page > L1_MAX_ENTRIES) {
       //printf("Oh god we failed\n");
       return (0);
