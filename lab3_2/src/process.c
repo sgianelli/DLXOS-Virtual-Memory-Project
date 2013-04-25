@@ -119,7 +119,7 @@ ProcessFreeResources (PCB *pcb)
     if(pcb->pagetable[i] != 0) {
       for(j = 0; j < L2_MAX_ENTRIES; j++) {
         if( *((uint32 *) (pcb->pagetable[i] & MEMORY_PTE_MASK) + j)  != 0) {
-          //printf("Process id %lu,\tvirtual page base address: %p\tFreeing physical page number: %d\n",findpid(pcb),&pcb->pagetable[i],i);        
+          printf("Process id: %lu\tVirtual page base address: %p\tFreeing physical page number: %d->%d\n",findpid(pcb),(pcb->pagetable[i]&MEMORY_PTE_MASK)+4*j,i,j);
           MemoryFreePte (((uint32 *) (pcb->pagetable[i] * MEMORY_PTE_MASK)) + j );
         }
         MemoryFreePte (pcb->pagetable[i]);
@@ -423,9 +423,10 @@ ProcessFork (VoidFunc func, uint32 param, char *name, int isUser)
   for(i = 0; i < 3; i++) {
     newPage = MemoryAllocPage();
     if (newPage == 0) pageFail();
-    *(L2_pagetable + i) = MemorySetupPte(newPage);
-  }
-  
+      *(L2_pagetable + i) = MemorySetupPte(newPage);
+       //printf("Process id: %lu\tPage text/data address: %p\t\tPhysical page number allocated: 0->%d\n",findpid(pcb), L2_pagetable+i, i);
+ }
+ 
   // Allocate last L2 page table
   newPage = MemoryAllocPage();
   if(newPage == 0)  pageFail();
@@ -436,6 +437,9 @@ ProcessFork (VoidFunc func, uint32 param, char *name, int isUser)
   newPage = MemoryAllocPage ();
   if (newPage == 0) pageFail();
   *(L2_pagetable + L2_MAX_ENTRIES - 1) = MemorySetupPte(newPage);
+  //printf("Process id: %lu\tPage user stack address: %p\tPhysical page number allocated: 31->%d\n",findpid(pcb), L2_pagetable+L2_MAX_ENTRIES-1, L2_MAX_ENTRIES-1);
+
+
 
   // 1 page for system stack
   newPage = MemoryAllocPage ();
@@ -947,7 +951,7 @@ void PageFaultHandler()
   uint32* L2_pagetable;
   int page, L2_page, L1_page;
 
-  printf("PageFaultHandler invoked!\n");
+  //printf("PageFaultHandler invoked!\n");
 
   tempstackframe = currentPCB->currentSavedFrame ;
   faultaddress = tempstackframe[PROCESS_STACK_FAULT];
@@ -983,5 +987,5 @@ void PageFaultHandler()
 
   currentPCB->npages = currentPCB->npages + 1;  
 
-    printf("Process id %lu,\tpage fault address: %p\tPhysical page number allocated: %d\n",findpid(currentPCB),faultaddress,page);
+  printf("Process id: %lu\tPage fault address: %p\t\tPhysical page number allocated: %d->%d\n",findpid(currentPCB),L2_pagetable+L2_page,L1_page,L2_page);
 }

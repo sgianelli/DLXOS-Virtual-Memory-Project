@@ -175,52 +175,20 @@ MemoryTranslateUserToSystem (PCB *pcb, uint32 addr)
     //
     uint32 *L2_pagetable;
     int page = addr / MEMORY_PAGE_SIZE;
-<<<<<<< Updated upstream
     int L2_page = page % L2_MAX_ENTRIES;
     int L1_page = page / L2_MAX_ENTRIES;
-=======
-    int L2_page = (addr >> MEMORY_L2_PAGE_SIZE_BITS) & L2_MAX_ENTRIES;
-    int L1_page = addr >> MEMORY_L1_PAGE_SIZE_BITS;
-    int L1_addr = pcb->pagetable[L1_page] & MEMORY_PTE_MASK;
-    int L2_addr = L1_addr[L2_page] & MEMORY_PTE_MASK;
->>>>>>> Stashed changes
     int offset = addr % MEMORY_PAGE_SIZE;
-    int physical = 
 
-<<<<<<< Updated upstream
    if((L1_page*L2_page) > ((L1_MAX_ENTRIES-1)*(L2_MAX_ENTRIES-1))) {
-=======
-    printf("MTU Invoked \
-            addr = 0x%8x \
-            physical = 0x%8x \
-            L1 = %2d \
-            L2 = %2d \
-            offset = %6x \
-            L1 Addr = 0x%8x \
-            L2 Addr = 0x%8x\n", 
-            addr, 
-            physical,
-            L1_page, 
-            L2_page, 
-            offset, 
-            L1_addr,
-            L2_addr);
-
-    if(page > L1_MAX_ENTRIES) {
->>>>>>> Stashed changes
-      printf("Oh god we failed\n");
+      printf("Out of memory!\n");
       return (0);
     }
 
-<<<<<<< Updated upstream
-    L2_pagetable = ((uint32 *)(pcb->pagetable[L1_page] & MEMORY_PTE_MASK)); // starting memory location of L2 page table
+    L2_pagetable = (uint32 *)(pcb->pagetable[L1_page] & MEMORY_PTE_MASK);
     L2_pagetable += L2_page;
-    printf("L1 page: %d\tL2 page: %d\treturning: %p\n", L1_page, L2_page, L2_pagetable);
+    //printf("L1 page: %d\tL2 page: %d\treturning: %p\n", L1_page, L2_page, L2_pagetable);
 
     return ((*(L2_pagetable) & MEMORY_PTE_MASK)+ offset);
-=======
-    return ((pcb->pagetable[L1_page] & MEMORY_PTE_MASK) & MEMORY_PTE_MASK) + offset;
->>>>>>> Stashed changes
 }
 
 //----------------------------------------------------------------------
